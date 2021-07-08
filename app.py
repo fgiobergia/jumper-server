@@ -4,15 +4,25 @@ from flask import Flask, request, jsonify
 from peaks import find_skips
 
 app = Flask(__name__)
-api_version = 1
+api_version = 2
 auth_key = "abc123"
 outdir = "storage"
 
 tmp_storage = {}
 tmp_count = 0
 
-@app.route(f"/api/v{api_version}/accel/reading", methods=["POST"])
-def reading():
+@app.route(f"/api/v{api_version}/<user_id>/new", methods=["GET"])
+def new_session(user_id):
+    pass
+
+@app.route(f"/api/v{api_version}/<session_id>/close", methods=["GET"])
+def close_session(session_id):
+    pass
+
+@app.route(f"/api/v{api_version}/<session_id>/store", methods=["POST"])
+def reading(session_id):
+    pass
+
     global tmp_storage, tmp_count
     obj = request.json
     auth_key_submitted = obj.pop("authKey")
