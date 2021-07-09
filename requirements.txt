@@ -2,3 +2,5 @@ Flask
 ipython
 scipy
 numpy
+pytest
+flaskr
