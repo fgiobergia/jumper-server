@@ -40,7 +40,7 @@ def create_app(user_config):
         if count == 0: # (a)
             return jsonify({ "status": "unauthorized", "message": "no user found"}), 401 # no user found
         
-        res = cur.execute("select id from sessions where user_id = ? and creation > ?", (user_id, datetime.datetime.now() - datetime.timedelta(seconds=config["session_timeout"]),))
+        res = cur.execute("select id from sessions where user_id = ? and creation > ? and closed = false", (user_id, datetime.datetime.now() - datetime.timedelta(seconds=config["session_timeout"]),))
 
         sess_id = res.fetchone()
 
@@ -58,11 +58,21 @@ def create_app(user_config):
 
             return jsonify({"status": "OK", "session_id": sess_id})
 
-        pass
-
     @app.route("/sessions/<session_id>/close", methods=["GET"])
     def close_session(session_id):
-        pass
+        """
+        if `session_id` exists, close it (closed=true), otherwise ignore it
+
+        This call will always return "OK" regardless of the session_id provided.
+        """
+
+        con = get_db()
+        cur = con.cursor()
+
+        res = cur.execute("update sessions set closed = true where id = ?", (session_id,))
+        con.commit()
+        
+        return jsonify({"status": "OK"})
     
     return app
 """
